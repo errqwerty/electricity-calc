@@ -300,7 +300,7 @@ body {
 <div class="page active" id="page-calc">
   <div class="tariff-section tariff-day">
     <div class="tariff-header">
-      <div class="tariff-label">&#9728;&#65039; День (7:00 — 23:00)</div>
+      <div class="tariff-label">&#9728;&#65039; Т1 День (7:00 — 23:00)</div>
       <div class="tariff-rate" id="dayRateDisplay">8,26 руб./кВт·ч</div>
     </div>
     <div class="inputs-row">
@@ -318,7 +318,7 @@ body {
 
   <div class="tariff-section tariff-night">
     <div class="tariff-header">
-      <div class="tariff-label">&#127769; Ночь (23:00 — 7:00)</div>
+      <div class="tariff-label">&#127769; Т2 Ночь (23:00 — 7:00)</div>
       <div class="tariff-rate" id="nightRateDisplay">3,57 руб./кВт·ч</div>
     </div>
     <div class="inputs-row">
@@ -338,8 +338,8 @@ body {
     <div class="result-label">Итого к оплате</div>
     <div class="result-total" id="total">0 <small>руб.</small></div>
     <div class="result-breakdown">
-      <span id="daySum">День: 0 р.</span>
-      <span id="nightSum">Ночь: 0 р.</span>
+      <span id="daySum">Т1: 0 р.</span>
+      <span id="nightSum">Т2: 0 р.</span>
     </div>
   </div>
 
@@ -360,14 +360,14 @@ body {
     <div class="settings-title">Тарифы</div>
     <div class="setting-row">
       <div class="setting-label">
-        &#9728;&#65039; День
+        &#9728;&#65039; Т1 День
         <small>7:00 — 23:00</small>
       </div>
       <input class="setting-input" type="number" step="0.01" id="settingDay" inputmode="decimal">
     </div>
     <div class="setting-row">
       <div class="setting-label">
-        &#127769; Ночь
+        &#127769; Т2 Ночь
         <small>23:00 — 7:00</small>
       </div>
       <input class="setting-input" type="number" step="0.01" id="settingNight" inputmode="decimal">
@@ -439,8 +439,8 @@ function calc() {
   $('nightInfo').innerHTML = nightKwh > 0
     ? `Расход: <b>${nightKwh} кВт·ч</b> = <b>${fmt(nightCost)} руб.</b>` : '';
 
-  $('daySum').textContent = `День: ${fmt(dayCost)} р.`;
-  $('nightSum').textContent = `Ночь: ${fmt(nightCost)} р.`;
+  $('daySum').textContent = `Т1: ${fmt(dayCost)} р.`;
+  $('nightSum').textContent = `Т2: ${fmt(nightCost)} р.`;
   $('total').innerHTML = `${fmt(total)} <small>руб.</small>`;
 
   saveBtn.disabled = (dayKwh + nightKwh) === 0;
@@ -525,9 +525,9 @@ function renderHistory() {
         <div class="history-total">${fmt(h.total)} руб.</div>
       </div>
       <div class="history-details">
-        <div>&#9728;&#65039; День: <b>${h.dayKwh} кВт·ч</b></div>
+        <div>&#9728;&#65039; Т1: <b>${h.dayKwh} кВт·ч</b></div>
         <div>= <b>${fmt(h.dayCost)} руб.</b></div>
-        <div>&#127769; Ночь: <b>${h.nightKwh} кВт·ч</b></div>
+        <div>&#127769; Т2: <b>${h.nightKwh} кВт·ч</b></div>
         <div>= <b>${fmt(h.nightCost)} руб.</b></div>
         <div style="color:var(--text2);font-size:12px;">Показания: ${h.dayPrev}→${h.dayCurr} / ${h.nightPrev}→${h.nightCurr}</div>
         <div style="color:var(--text2);font-size:12px;">${dateStr}</div>
