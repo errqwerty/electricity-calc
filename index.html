@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#6366f1">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.svg">
+<title>Электроэнергия</title>
+<style>
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --day-bg: #fffbeb;
+  --day-border: #fde68a;
+  --day-text: #b45309;
+  --night-bg: #eef2ff;
+  --night-border: #c7d2fe;
+  --night-text: #4338ca;
+  --bg: #f0f2f5;
+  --card: #ffffff;
+  --text: #1a1a1a;
+  --text2: #6b7280;
+  --border: #e5e7eb;
+  --danger: #ef4444;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.tab {
+  flex: 1;
+  padding: 14px 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text2);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* ── Pages ── */
+.page { display: none; flex: 1; padding: 16px; overflow-y: auto; padding-bottom: 32px; }
+.page.active { display: block; }
+
+/* ── Calculator ── */
+.tariff-section {
+  padding: 16px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+}
+.tariff-day { background: var(--day-bg); border: 1px solid var(--day-border); }
+.tariff-night { background: var(--night-bg); border: 1px solid var(--night-border); }
+
+.tariff-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.tariff-label {
+  font-weight: 600;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tariff-day .tariff-label { color: var(--day-text); }
+.tariff-night .tariff-label { color: var(--night-text); }
+
+.tariff-rate {
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.inputs-row { display: flex; gap: 10px; }
+.input-group { flex: 1; }
+.input-group label {
+  display: block;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 18px;
+  background: var(--card);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+.input-group input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+}
+
+.consumption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text2);
+  min-height: 18px;
+}
+.consumption b { color: var(--text); }
+
+/* ── Result card ── */
+.result-card {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 16px;
+  padding: 20px;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 14px;
+}
+.result-label { font-size: 13px; opacity: 0.85; }
+.result-total { font-size: 36px; font-weight: 700; margin: 4px 0; }
+.result-total small { font-size: 18px; font-weight: 400; opacity: 0.8; }
+.result-breakdown {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  font-size: 13px;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+/* ── Buttons ── */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:active { background: var(--primary-dark); transform: scale(0.98); }
+.btn-secondary { background: var(--border); color: var(--text2); margin-top: 10px; }
+.btn-secondary:active { background: #d1d5db; }
+
+.btn-row { display: flex; gap: 10px; margin-top: 14px; }
+.btn-row .btn { flex: 1; }
+
+/* ── History ── */
+.history-empty {
+  text-align: center;
+  color: var(--text2);
+  padding: 60px 20px;
+  font-size: 15px;
+}
+.history-empty .icon { font-size: 48px; margin-bottom: 12px; }
+
+.history-item {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+}
+.history-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.history-month {
+  font-weight: 700;
+  font-size: 16px;
+}
+.history-total {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--primary);
+}
+.history-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text2);
+}
+.history-details b { color: var(--text); font-weight: 600; }
+
+.history-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.btn-delete {
+  background: none;
+  border: none;
+  color: var(--danger);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.btn-delete:active { background: #fef2f2; }
+
+/* ── Settings ── */
+.settings-section {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+}
+.settings-title {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+.setting-row:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+.setting-label {
+  font-size: 14px;
+  color: var(--text);
+}
+.setting-label small {
+  display: block;
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 400;
+}
+.setting-input {
+  width: 100px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: right;
+  outline: none;
+  background: var(--bg);
+}
+.setting-input:focus {
+  border-color: var(--primary);
+}
+
+.version {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text2);
+  padding: 16px;
+}
+</style>
+</head>
+<body>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-page="calc">Расчёт</button>
+  <button class="tab" data-page="history">История</button>
+  <button class="tab" data-page="settings">Настройки</button>
+</div>
+
+<!-- ══ Calculator ══ -->
+<div class="page active" id="page-calc">
+  <div class="tariff-section tariff-day">
+    <div class="tariff-header">
+      <div class="tariff-label">&#9728;&#65039; День (7:00 — 23:00)</div>
+      <div class="tariff-rate" id="dayRateDisplay">8,26 руб./кВт·ч</div>
+    </div>
+    <div class="inputs-row">
+      <div class="input-group">
+        <label>Предыдущее</label>
+        <input type="number" inputmode="numeric" id="dayPrev" placeholder="0">
+      </div>
+      <div class="input-group">
+        <label>Текущее</label>
+        <input type="number" inputmode="numeric" id="dayCurr" placeholder="0">
+      </div>
+    </div>
+    <div class="consumption" id="dayInfo"></div>
+  </div>
+
+  <div class="tariff-section tariff-night">
+    <div class="tariff-header">
+      <div class="tariff-label">&#127769; Ночь (23:00 — 7:00)</div>
+      <div class="tariff-rate" id="nightRateDisplay">3,57 руб./кВт·ч</div>
+    </div>
+    <div class="inputs-row">
+      <div class="input-group">
+        <label>Предыдущее</label>
+        <input type="number" inputmode="numeric" id="nightPrev" placeholder="0">
+      </div>
+      <div class="input-group">
+        <label>Текущее</label>
+        <input type="number" inputmode="numeric" id="nightCurr" placeholder="0">
+      </div>
+    </div>
+    <div class="consumption" id="nightInfo"></div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-label">Итого к оплате</div>
+    <div class="result-total" id="total">0 <small>руб.</small></div>
+    <div class="result-breakdown">
+      <span id="daySum">День: 0 р.</span>
+      <span id="nightSum">Ночь: 0 р.</span>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" id="saveBtn" disabled>Сохранить</button>
+    <button class="btn btn-secondary" id="resetBtn">Сброс</button>
+  </div>
+</div>
+
+<!-- ══ History ══ -->
+<div class="page" id="page-history">
+  <div id="historyList"></div>
+</div>
+
+<!-- ══ Settings ══ -->
+<div class="page" id="page-settings">
+  <div class="settings-section">
+    <div class="settings-title">Тарифы</div>
+    <div class="setting-row">
+      <div class="setting-label">
+        &#9728;&#65039; День
+        <small>7:00 — 23:00</small>
+      </div>
+      <input class="setting-input" type="number" step="0.01" id="settingDay" inputmode="decimal">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        &#127769; Ночь
+        <small>23:00 — 7:00</small>
+      </div>
+      <input class="setting-input" type="number" step="0.01" id="settingNight" inputmode="decimal">
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-title">Данные</div>
+    <div class="setting-row">
+      <div class="setting-label">Записей в истории</div>
+      <span id="historyCount">0</span>
+    </div>
+    <button class="btn btn-secondary" id="clearAllBtn" style="margin-top:8px;color:var(--danger);">
+      Очистить всю историю
+    </button>
+  </div>
+
+  <div class="version">Калькулятор электроэнергии v1.0</div>
+</div>
+
+<script>
+// ── Storage helpers ──
+const store = {
+  get(key, fallback) {
+    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+    catch { return fallback; }
+  },
+  set(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+};
+
+// ── State ──
+let rates = store.get('rates', { day: 8.26, night: 3.57 });
+let history = store.get('history', []);
+
+// ── Elements ──
+const $ = id => document.getElementById(id);
+const dayPrev = $('dayPrev'), dayCurr = $('dayCurr');
+const nightPrev = $('nightPrev'), nightCurr = $('nightCurr');
+const saveBtn = $('saveBtn'), resetBtn = $('resetBtn');
+const settingDay = $('settingDay'), settingNight = $('settingNight');
+
+// ── Tabs ──
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    $('page-' + tab.dataset.page).classList.add('active');
+    if (tab.dataset.page === 'history') renderHistory();
+    if (tab.dataset.page === 'settings') refreshSettings();
+  });
+});
+
+// ── Calculator ──
+function calc() {
+  const dp = parseFloat(dayPrev.value) || 0;
+  const dc = parseFloat(dayCurr.value) || 0;
+  const np = parseFloat(nightPrev.value) || 0;
+  const nc = parseFloat(nightCurr.value) || 0;
+
+  const dayKwh = Math.max(0, dc - dp);
+  const nightKwh = Math.max(0, nc - np);
+  const dayCost = dayKwh * rates.day;
+  const nightCost = nightKwh * rates.night;
+  const total = dayCost + nightCost;
+
+  $('dayInfo').innerHTML = dayKwh > 0
+    ? `Расход: <b>${dayKwh} кВт·ч</b> = <b>${fmt(dayCost)} руб.</b>` : '';
+  $('nightInfo').innerHTML = nightKwh > 0
+    ? `Расход: <b>${nightKwh} кВт·ч</b> = <b>${fmt(nightCost)} руб.</b>` : '';
+
+  $('daySum').textContent = `День: ${fmt(dayCost)} р.`;
+  $('nightSum').textContent = `Ночь: ${fmt(nightCost)} р.`;
+  $('total').innerHTML = `${fmt(total)} <small>руб.</small>`;
+
+  saveBtn.disabled = (dayKwh + nightKwh) === 0;
+}
+
+function fmt(n) { return n.toFixed(2).replace('.', ','); }
+
+[dayPrev, dayCurr, nightPrev, nightCurr].forEach(el => el.addEventListener('input', calc));
+
+// ── Auto-fill from last history entry ──
+function autoFillPrevious() {
+  if (history.length === 0) return;
+  const last = history[0]; // newest first
+  dayPrev.value = last.dayCurr || '';
+  nightPrev.value = last.nightCurr || '';
+  calc();
+}
+
+// ── Save ──
+saveBtn.addEventListener('click', () => {
+  const dp = parseFloat(dayPrev.value) || 0;
+  const dc = parseFloat(dayCurr.value) || 0;
+  const np = parseFloat(nightPrev.value) || 0;
+  const nc = parseFloat(nightCurr.value) || 0;
+  const dayKwh = Math.max(0, dc - dp);
+  const nightKwh = Math.max(0, nc - np);
+
+  const entry = {
+    id: Date.now(),
+    date: new Date().toISOString(),
+    dayPrev: dp, dayCurr: dc,
+    nightPrev: np, nightCurr: nc,
+    dayKwh, nightKwh,
+    dayRate: rates.day, nightRate: rates.night,
+    dayCost: dayKwh * rates.day,
+    nightCost: nightKwh * rates.night,
+    total: dayKwh * rates.day + nightKwh * rates.night,
+  };
+
+  history.unshift(entry);
+  store.set('history', history);
+
+  resetCalc();
+  autoFillPrevious();
+
+  // Switch to history
+  document.querySelectorAll('.tab')[1].click();
+});
+
+// ── Reset ──
+function resetCalc() {
+  [dayPrev, dayCurr, nightPrev, nightCurr].forEach(el => el.value = '');
+  calc();
+}
+resetBtn.addEventListener('click', () => {
+  resetCalc();
+  autoFillPrevious();
+});
+
+// ── History ──
+const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь',
+  'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+function renderHistory() {
+  const list = $('historyList');
+  if (history.length === 0) {
+    list.innerHTML = `<div class="history-empty">
+      <div class="icon">&#128203;</div>
+      <div>Нет сохранённых расчётов</div>
+      <div style="margin-top:6px;font-size:13px;">Сделайте расчёт и нажмите «Сохранить»</div>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = history.map(h => {
+    const d = new Date(h.date);
+    const label = `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+    const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'short', year:'numeric' });
+    return `<div class="history-item">
+      <div class="history-item-header">
+        <div class="history-month">${label}</div>
+        <div class="history-total">${fmt(h.total)} руб.</div>
+      </div>
+      <div class="history-details">
+        <div>&#9728;&#65039; День: <b>${h.dayKwh} кВт·ч</b></div>
+        <div>= <b>${fmt(h.dayCost)} руб.</b></div>
+        <div>&#127769; Ночь: <b>${h.nightKwh} кВт·ч</b></div>
+        <div>= <b>${fmt(h.nightCost)} руб.</b></div>
+        <div style="color:var(--text2);font-size:12px;">Показания: ${h.dayPrev}→${h.dayCurr} / ${h.nightPrev}→${h.nightCurr}</div>
+        <div style="color:var(--text2);font-size:12px;">${dateStr}</div>
+      </div>
+      <div class="history-actions">
+        <button class="btn-delete" onclick="deleteEntry(${h.id})">Удалить</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.deleteEntry = function(id) {
+  if (!confirm('Удалить запись?')) return;
+  history = history.filter(h => h.id !== id);
+  store.set('history', history);
+  renderHistory();
+  refreshSettings();
+};
+
+// ── Settings ──
+function refreshSettings() {
+  settingDay.value = rates.day;
+  settingNight.value = rates.night;
+  $('historyCount').textContent = history.length;
+}
+
+function updateRateDisplay() {
+  $('dayRateDisplay').textContent = `${fmt(rates.day)} руб./кВт·ч`;
+  $('nightRateDisplay').textContent = `${fmt(rates.night)} руб./кВт·ч`;
+}
+
+settingDay.addEventListener('change', () => {
+  const v = parseFloat(settingDay.value);
+  if (v > 0) { rates.day = v; store.set('rates', rates); updateRateDisplay(); calc(); }
+});
+settingNight.addEventListener('change', () => {
+  const v = parseFloat(settingNight.value);
+  if (v > 0) { rates.night = v; store.set('rates', rates); updateRateDisplay(); calc(); }
+});
+
+$('clearAllBtn').addEventListener('click', () => {
+  if (!confirm('Удалить всю историю?')) return;
+  history = [];
+  store.set('history', history);
+  refreshSettings();
+});
+
+// ── Init ──
+updateRateDisplay();
+autoFillPrevious();
+
+// ── PWA ──
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
+</body>
+</html>
