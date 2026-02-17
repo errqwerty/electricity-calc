@@ -31,6 +31,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Segoe UI', Roboto, sans-serif;
+  font-size: 18px;
   background: var(--bg);
   color: var(--text);
   min-height: 100dvh;
@@ -50,9 +51,9 @@ body {
 }
 .tab {
   flex: 1;
-  padding: 14px 0;
+  padding: 16px 0;
   text-align: center;
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--text2);
   border: none;
@@ -87,7 +88,7 @@ body {
 }
 .tariff-label {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 18px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -96,7 +97,7 @@ body {
 .tariff-night .tariff-label { color: var(--night-text); }
 
 .tariff-rate {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text2);
   font-weight: 500;
 }
@@ -105,17 +106,17 @@ body {
 .input-group { flex: 1; }
 .input-group label {
   display: block;
-  font-size: 12px;
+  font-size: 15px;
   color: var(--text2);
   margin-bottom: 4px;
   font-weight: 500;
 }
 .input-group input {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   border: 1px solid var(--border);
   border-radius: 10px;
-  font-size: 18px;
+  font-size: 22px;
   background: var(--card);
   color: var(--text);
   outline: none;
@@ -129,7 +130,7 @@ body {
 
 .consumption {
   margin-top: 8px;
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text2);
   min-height: 18px;
 }
@@ -144,14 +145,14 @@ body {
   text-align: center;
   margin-bottom: 14px;
 }
-.result-label { font-size: 13px; opacity: 0.85; }
-.result-total { font-size: 36px; font-weight: 700; margin: 4px 0; }
-.result-total small { font-size: 18px; font-weight: 400; opacity: 0.8; }
+.result-label { font-size: 16px; opacity: 0.85; }
+.result-total { font-size: 42px; font-weight: 700; margin: 4px 0; }
+.result-total small { font-size: 20px; font-weight: 400; opacity: 0.8; }
 .result-breakdown {
   display: flex;
   justify-content: center;
   gap: 24px;
-  font-size: 13px;
+  font-size: 16px;
   opacity: 0.9;
   margin-top: 4px;
 }
@@ -159,10 +160,10 @@ body {
 /* ── Buttons ── */
 .btn {
   width: 100%;
-  padding: 14px;
+  padding: 16px;
   border: none;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -199,18 +200,18 @@ body {
 }
 .history-month {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 19px;
 }
 .history-total {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 19px;
   color: var(--primary);
 }
 .history-details {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text2);
 }
 .history-details b { color: var(--text); font-weight: 600; }
@@ -226,7 +227,7 @@ body {
   background: none;
   border: none;
   color: var(--danger);
-  font-size: 13px;
+  font-size: 15px;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
@@ -243,7 +244,7 @@ body {
 }
 .settings-title {
   font-weight: 700;
-  font-size: 15px;
+  font-size: 18px;
   margin-bottom: 12px;
 }
 .setting-row {
@@ -256,21 +257,21 @@ body {
   border-bottom: 1px solid var(--border);
 }
 .setting-label {
-  font-size: 14px;
+  font-size: 17px;
   color: var(--text);
 }
 .setting-label small {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text2);
   font-weight: 400;
 }
 .setting-input {
-  width: 100px;
-  padding: 8px 10px;
+  width: 110px;
+  padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 20px;
   text-align: right;
   outline: none;
   background: var(--bg);
@@ -292,7 +293,7 @@ body {
   border-radius: 12px;
   padding: 14px 36px 14px 14px;
   margin-bottom: 14px;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.6;
   color: var(--text);
   position: relative;
@@ -560,8 +561,8 @@ function renderHistory() {
         <div>= <b>${fmt(h.dayCost)} руб.</b></div>
         <div>&#127769; Т2: <b>${h.nightKwh} кВт·ч</b></div>
         <div>= <b>${fmt(h.nightCost)} руб.</b></div>
-        <div style="color:var(--text2);font-size:12px;">Показания: ${h.dayPrev}→${h.dayCurr} / ${h.nightPrev}→${h.nightCurr}</div>
-        <div style="color:var(--text2);font-size:12px;">${dateStr}</div>
+        <div style="color:var(--text2);font-size:14px;">Показания: ${h.dayPrev}→${h.dayCurr} / ${h.nightPrev}→${h.nightCurr}</div>
+        <div style="color:var(--text2);font-size:14px;">${dateStr}</div>
       </div>
       <div class="history-actions">
         <button class="btn-delete" onclick="deleteEntry(${h.id})">Удалить</button>
