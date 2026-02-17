@@ -285,6 +285,29 @@ body {
   color: var(--text2);
   padding: 16px;
 }
+
+.tip {
+  background: #eef2ff;
+  border: 1px solid var(--night-border);
+  border-radius: 12px;
+  padding: 14px 36px 14px 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  position: relative;
+}
+.tip-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--text2);
+  cursor: pointer;
+  line-height: 1;
+}
 </style>
 </head>
 <body>
@@ -298,6 +321,14 @@ body {
 
 <!-- ══ Calculator ══ -->
 <div class="page active" id="page-calc">
+  <div class="tip" id="tip">
+    <button class="tip-close" onclick="dismissTip()">&times;</button>
+    <b>Как пользоваться:</b><br>
+    1. Спишите показания со счётчика (Т1 и Т2)<br>
+    2. Введите предыдущие и текущие значения<br>
+    3. Сумма посчитается автоматически<br>
+    4. Нажмите «Сохранить» для истории
+  </div>
   <div class="tariff-section tariff-day">
     <div class="tariff-header">
       <div class="tariff-label">&#9728;&#65039; Т1 День (7:00 — 23:00)</div>
@@ -574,6 +605,15 @@ $('clearAllBtn').addEventListener('click', () => {
   store.set('history', history);
   refreshSettings();
 });
+
+// ── Tip ──
+window.dismissTip = function() {
+  $('tip').style.display = 'none';
+  localStorage.setItem('tipDismissed', '1');
+};
+if (localStorage.getItem('tipDismissed')) {
+  $('tip').style.display = 'none';
+}
 
 // ── Init ──
 updateRateDisplay();
